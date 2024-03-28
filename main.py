@@ -19,7 +19,7 @@ class PlayWithAmazon:
                           'xfmmdfbe:kbf25s6qb4ei@64.137.103.27:6615',
                           'xfmmdfbe:kbf25s6qb4ei@64.137.103.229:6817',
                           'xfmmdfbe:kbf25s6qb4ei@138.128.145.132:6051',
-                          'xfmmdfbe:kbf25s6qb4ei@64.137.103.123:6711'])
+                          'xfmmdfbe:kbf25s6qb4ei@64.137.108.78:5671'])
 
     def fetch(self, headers, url):
         conn = sqlite3.connect('amazon.db')
@@ -33,12 +33,13 @@ class PlayWithAmazon:
             """
         )
         proxy = choice(self.proxies)
-        proxy = {
-            "http": f"http://{proxy}/",
-            "https": f"http://{proxy}/"
+        sel_proxy = {
+            "http": f"http://{proxy}",
+            "https": f"http://{proxy}"
         }
 
-        response = requests.get(url, headers=headers, proxies=proxy)
+        print(url, proxy)
+        response = requests.get(url, headers=headers, proxies=sel_proxy)
         time.sleep(1)
         if response.status_code != 200:
             response.raise_for_status()
@@ -74,6 +75,8 @@ class PlayWithAmazon:
         datas = curr.fetchall()
         products = []
         for data in datas:
+            print(data[0])
+            print(data[1])
             tree = HTMLParser(data[1])
             timestamp = datetime.datetime.now()
             try:
@@ -115,42 +118,21 @@ class PlayWithAmazon:
 
     def main(self):
 
-        # headers = {
-            # 'Host': 'www.amazon.de',
-            # 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
-            # 'Cookie': 'i18n-prefs=EUR;',
-            # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            # 'Accept-Language': 'en-US,en;q=0.5',
-            # 'Accept-Encoding': 'gzip, deflate, br',
-            # 'DNT': '1',
-            # 'Sec-GPC': '1',
-            # 'Connection': 'keep-alive',
-            # 'Upgrade-Insecure-Requests': '1',
-            # 'Sec-Fetch-Dest': 'document',
-            # 'Sec-Fetch-Mode': 'navigate',
-            # 'Sec-Fetch-Site': 'none',
-            # 'Sec-Fetch-User': '?1'
-        # }
-
-        custom_headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15',
-            'Accept-Language': 'da, en-gb, en',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Referer': 'https://www.google.com/'
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Cookie": "i18n-prefs=EUR;"
         }
 
         asins = ['B000O6XSFO', 'B0C9Q68TDG', 'B07TL8T5T8', 'B09VPQ5ZTR', 'B0BL3XWYJ5', 'B0035F1DCG', 'B09VC7XWD9', 'B0761VD7L4', 'B09KPWTYNQ', 'B09VP7BZC8']
+
         # self.truncate_db()
         # self.drop_db()
-        #
 
         for asin in asins:
             try:
-                # client = Client(headers=custom_headers, follow_redirects=True, http2=True)
                 endpoint = f'/dp/{asin}?th=1'
                 url = urljoin(self.base_url, endpoint)
-                self.fetch(headers=custom_headers, url=url)
+                self.fetch(headers=headers, url=url)
             except Exception as e:
                 print(e)
                 continue
