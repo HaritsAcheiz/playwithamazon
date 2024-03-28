@@ -38,7 +38,6 @@ class PlayWithAmazon:
             "https": f"http://{proxy}"
         }
 
-        print(url, proxy)
         response = requests.get(url, headers=headers, proxies=sel_proxy)
         time.sleep(1)
         if response.status_code != 200:
@@ -75,8 +74,6 @@ class PlayWithAmazon:
         datas = curr.fetchall()
         products = []
         for data in datas:
-            print(data[0])
-            print(data[1])
             tree = HTMLParser(data[1])
             timestamp = datetime.datetime.now()
             try:
